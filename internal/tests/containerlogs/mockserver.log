@@ -1,0 +1,502 @@
+2026-06-05 20:29:32 5.15.0 INFO using environment variables:
+
+  [
+  	MOCKSERVER_SERVER_PORT=2090,
+  	MOCKSERVER_LOG_LEVEL=DEBUG
+  ]
+
+ and system properties:
+
+  [
+  	mockserver.propertyFile=/config/mockserver.properties
+  ]
+
+ and command line options:
+
+  [
+  	
+  ]
+ 
+2026-06-05 20:29:32 5.15.0 FINE logger level is DEBUG, change using:
+ - 'ConfigurationProperties.logLevel(String level)' in Java code,
+ - '-logLevel' command line argument,
+ - 'mockserver.logLevel' JVM system property or,
+ - 'mockserver.logLevel' property value in 'mockserver.properties' 
+2026-06-05 20:29:32 5.15.0 INFO 2090 started on port: 2090 
+2026-06-05 20:29:33 5.15.0 INFO 2090 creating expectation:
+
+  {
+    "httpRequest" : {
+      "method" : "POST",
+      "path" : "/api/v1/auth/identity/sessions"
+    },
+    "httpResponse" : {
+      "statusCode" : 200,
+      "headers" : {
+        "content-type" : [ "application/json" ],
+        "Set-Cookie" : [ "_barong_session=test_session; Path=/; HttpOnly" ]
+      },
+      "body" : {
+        "uid" : "IDADMIN000001",
+        "email" : "admin@barong.io",
+        "role" : "admin",
+        "level" : 4,
+        "otp" : false,
+        "state" : "active"
+      }
+    },
+    "id" : "barongLoginSucceed",
+    "priority" : 0,
+    "timeToLive" : {
+      "unlimited" : true
+    },
+    "times" : {
+      "unlimited" : true
+    }
+  }
+
+ with id:
+
+  barongLoginSucceed
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 received request:
+
+  {
+    "method" : "POST",
+    "path" : "/api/v1/auth/identity/sessions",
+    "headers" : {
+      "User-Agent" : [ "Go-http-client/1.1" ],
+      "Host" : [ "localhost:2090" ],
+      "Content-Type" : [ "application/x-www-form-urlencoded" ],
+      "Content-Length" : [ "54" ],
+      "Accept-Encoding" : [ "gzip" ]
+    },
+    "keepAlive" : true,
+    "secure" : false,
+    "protocol" : "HTTP_1_1",
+    "localAddress" : "172.17.0.4:2090",
+    "remoteAddress" : "172.17.0.1:41270",
+    "body" : "email=admin%40barong.io&password=barong_admin_password"
+  }
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 request:
+
+  {
+    "method" : "POST",
+    "path" : "/api/v1/auth/identity/sessions",
+    "headers" : {
+      "User-Agent" : [ "Go-http-client/1.1" ],
+      "Host" : [ "localhost:2090" ],
+      "Content-Type" : [ "application/x-www-form-urlencoded" ],
+      "Content-Length" : [ "54" ],
+      "Accept-Encoding" : [ "gzip" ]
+    },
+    "keepAlive" : true,
+    "secure" : false,
+    "protocol" : "HTTP_1_1",
+    "localAddress" : "172.17.0.4:2090",
+    "remoteAddress" : "172.17.0.1:41270",
+    "body" : "email=admin%40barong.io&password=barong_admin_password"
+  }
+
+ matched expectation:
+
+  {
+    "httpRequest" : {
+      "method" : "POST",
+      "path" : "/api/v1/auth/identity/sessions"
+    },
+    "httpResponse" : {
+      "statusCode" : 200,
+      "headers" : {
+        "content-type" : [ "application/json" ],
+        "Set-Cookie" : [ "_barong_session=test_session; Path=/; HttpOnly" ]
+      },
+      "body" : {
+        "uid" : "IDADMIN000001",
+        "email" : "admin@barong.io",
+        "role" : "admin",
+        "level" : 4,
+        "otp" : false,
+        "state" : "active"
+      }
+    },
+    "id" : "barongLoginSucceed",
+    "priority" : 0,
+    "timeToLive" : {
+      "unlimited" : true
+    },
+    "times" : {
+      "unlimited" : true
+    }
+  }
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 returning response:
+
+  {
+    "statusCode" : 200,
+    "headers" : {
+      "content-type" : [ "application/json" ],
+      "Set-Cookie" : [ "_barong_session=test_session; Path=/; HttpOnly" ]
+    },
+    "body" : {
+      "uid" : "IDADMIN000001",
+      "email" : "admin@barong.io",
+      "role" : "admin",
+      "level" : 4,
+      "otp" : false,
+      "state" : "active"
+    }
+  }
+
+ for request:
+
+  {
+    "method" : "POST",
+    "path" : "/api/v1/auth/identity/sessions",
+    "headers" : {
+      "User-Agent" : [ "Go-http-client/1.1" ],
+      "Host" : [ "localhost:2090" ],
+      "Content-Type" : [ "application/x-www-form-urlencoded" ],
+      "Content-Length" : [ "54" ],
+      "Accept-Encoding" : [ "gzip" ]
+    },
+    "keepAlive" : true,
+    "secure" : false,
+    "protocol" : "HTTP_1_1",
+    "localAddress" : "172.17.0.4:2090",
+    "remoteAddress" : "172.17.0.1:41270",
+    "body" : "email=admin%40barong.io&password=barong_admin_password"
+  }
+
+ for action:
+
+  {
+    "statusCode" : 200,
+    "headers" : {
+      "content-type" : [ "application/json" ],
+      "Set-Cookie" : [ "_barong_session=test_session; Path=/; HttpOnly" ]
+    },
+    "body" : {
+      "uid" : "IDADMIN000001",
+      "email" : "admin@barong.io",
+      "role" : "admin",
+      "level" : 4,
+      "otp" : false,
+      "state" : "active"
+    }
+  }
+
+ from expectation:
+
+  barongLoginSucceed
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 creating expectation:
+
+  {
+    "httpRequest" : {
+      "method" : "PUT",
+      "path" : "/api/v1/auth/admin/users"
+    },
+    "httpResponse" : {
+      "statusCode" : 200,
+      "headers" : {
+        "content-type" : [ "application/json" ]
+      },
+      "body" : { }
+    },
+    "id" : "updateUserSucceed",
+    "priority" : 0,
+    "timeToLive" : {
+      "unlimited" : true
+    },
+    "times" : {
+      "unlimited" : true
+    }
+  }
+
+ with id:
+
+  updateUserSucceed
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 received request:
+
+  {
+    "method" : "PUT",
+    "path" : "/api/v1/auth/admin/users",
+    "headers" : {
+      "User-Agent" : [ "Go-http-client/1.1" ],
+      "Host" : [ "localhost:2090" ],
+      "Cookie" : [ "_barong_session=test_session" ],
+      "Content-Type" : [ "application/x-www-form-urlencoded" ],
+      "Content-Length" : [ "29" ],
+      "Accept-Encoding" : [ "gzip" ]
+    },
+    "cookies" : {
+      "_barong_session" : "test_session"
+    },
+    "keepAlive" : true,
+    "secure" : false,
+    "protocol" : "HTTP_1_1",
+    "localAddress" : "172.17.0.4:2090",
+    "remoteAddress" : "172.17.0.1:41280",
+    "body" : "state=active&uid=IDEC30C9F566"
+  }
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 request:
+
+  {
+    "method" : "PUT",
+    "path" : "/api/v1/auth/admin/users",
+    "headers" : {
+      "User-Agent" : [ "Go-http-client/1.1" ],
+      "Host" : [ "localhost:2090" ],
+      "Cookie" : [ "_barong_session=test_session" ],
+      "Content-Type" : [ "application/x-www-form-urlencoded" ],
+      "Content-Length" : [ "29" ],
+      "Accept-Encoding" : [ "gzip" ]
+    },
+    "cookies" : {
+      "_barong_session" : "test_session"
+    },
+    "keepAlive" : true,
+    "secure" : false,
+    "protocol" : "HTTP_1_1",
+    "localAddress" : "172.17.0.4:2090",
+    "remoteAddress" : "172.17.0.1:41280",
+    "body" : "state=active&uid=IDEC30C9F566"
+  }
+
+ didn't match expectation:
+
+  {
+    "httpRequest" : {
+      "method" : "POST",
+      "path" : "/api/v1/auth/identity/sessions"
+    },
+    "httpResponse" : {
+      "statusCode" : 200,
+      "headers" : {
+        "content-type" : [ "application/json" ],
+        "Set-Cookie" : [ "_barong_session=test_session; Path=/; HttpOnly" ]
+      },
+      "body" : {
+        "uid" : "IDADMIN000001",
+        "email" : "admin@barong.io",
+        "role" : "admin",
+        "level" : 4,
+        "otp" : false,
+        "state" : "active"
+      }
+    },
+    "id" : "barongLoginSucceed",
+    "priority" : 0,
+    "timeToLive" : {
+      "unlimited" : true
+    },
+    "times" : {
+      "unlimited" : true
+    }
+  }
+
+ because:
+
+  method didn't match: 
+  
+    string or regex match failed expected:
+  
+      POST
+  
+     found:
+  
+      PUT
+
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 request:
+
+  {
+    "method" : "PUT",
+    "path" : "/api/v1/auth/admin/users",
+    "headers" : {
+      "User-Agent" : [ "Go-http-client/1.1" ],
+      "Host" : [ "localhost:2090" ],
+      "Cookie" : [ "_barong_session=test_session" ],
+      "Content-Type" : [ "application/x-www-form-urlencoded" ],
+      "Content-Length" : [ "29" ],
+      "Accept-Encoding" : [ "gzip" ]
+    },
+    "cookies" : {
+      "_barong_session" : "test_session"
+    },
+    "keepAlive" : true,
+    "secure" : false,
+    "protocol" : "HTTP_1_1",
+    "localAddress" : "172.17.0.4:2090",
+    "remoteAddress" : "172.17.0.1:41280",
+    "body" : "state=active&uid=IDEC30C9F566"
+  }
+
+ matched expectation:
+
+  {
+    "httpRequest" : {
+      "method" : "PUT",
+      "path" : "/api/v1/auth/admin/users"
+    },
+    "httpResponse" : {
+      "statusCode" : 200,
+      "headers" : {
+        "content-type" : [ "application/json" ]
+      },
+      "body" : { }
+    },
+    "id" : "updateUserSucceed",
+    "priority" : 0,
+    "timeToLive" : {
+      "unlimited" : true
+    },
+    "times" : {
+      "unlimited" : true
+    }
+  }
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 returning response:
+
+  {
+    "statusCode" : 200,
+    "headers" : {
+      "content-type" : [ "application/json" ]
+    },
+    "body" : { }
+  }
+
+ for request:
+
+  {
+    "method" : "PUT",
+    "path" : "/api/v1/auth/admin/users",
+    "headers" : {
+      "User-Agent" : [ "Go-http-client/1.1" ],
+      "Host" : [ "localhost:2090" ],
+      "Cookie" : [ "_barong_session=test_session" ],
+      "Content-Type" : [ "application/x-www-form-urlencoded" ],
+      "Content-Length" : [ "29" ],
+      "Accept-Encoding" : [ "gzip" ]
+    },
+    "cookies" : {
+      "_barong_session" : "test_session"
+    },
+    "keepAlive" : true,
+    "secure" : false,
+    "protocol" : "HTTP_1_1",
+    "localAddress" : "172.17.0.4:2090",
+    "remoteAddress" : "172.17.0.1:41280",
+    "body" : "state=active&uid=IDEC30C9F566"
+  }
+
+ for action:
+
+  {
+    "statusCode" : 200,
+    "headers" : {
+      "content-type" : [ "application/json" ]
+    },
+    "body" : { }
+  }
+
+ from expectation:
+
+  updateUserSucceed
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 verifying requests that match:
+
+  {
+    "expectationId" : {
+      "id" : "updateUserSucceed"
+    },
+    "httpRequest" : {
+      "method" : "PUT",
+      "path" : "/api/v1/auth/admin/users"
+    },
+    "times" : {
+      "atLeast" : 1,
+      "atMost" : 1
+    }
+  }
+ 
+2026-06-05 20:29:33 5.15.0 INFO request:
+
+  {
+    "method" : "PUT",
+    "path" : "/api/v1/auth/admin/users"
+  }
+
+ found exactly once 
+2026-06-05 20:29:33 5.15.0 INFO cleared logs that match:
+
+  {}
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 removed expectation:
+
+  {
+    "httpRequest" : {
+      "method" : "POST",
+      "path" : "/api/v1/auth/identity/sessions"
+    },
+    "httpResponse" : {
+      "statusCode" : 200,
+      "headers" : {
+        "content-type" : [ "application/json" ],
+        "Set-Cookie" : [ "_barong_session=test_session; Path=/; HttpOnly" ]
+      },
+      "body" : {
+        "uid" : "IDADMIN000001",
+        "email" : "admin@barong.io",
+        "role" : "admin",
+        "level" : 4,
+        "otp" : false,
+        "state" : "active"
+      }
+    },
+    "id" : "barongLoginSucceed",
+    "priority" : 0,
+    "timeToLive" : {
+      "unlimited" : true
+    },
+    "times" : {
+      "unlimited" : true
+    }
+  }
+
+ with id:
+
+  barongLoginSucceed
+ 
+2026-06-05 20:29:33 5.15.0 INFO 2090 removed expectation:
+
+  {
+    "httpRequest" : {
+      "method" : "PUT",
+      "path" : "/api/v1/auth/admin/users"
+    },
+    "httpResponse" : {
+      "statusCode" : 200,
+      "headers" : {
+        "content-type" : [ "application/json" ]
+      },
+      "body" : { }
+    },
+    "id" : "updateUserSucceed",
+    "priority" : 0,
+    "timeToLive" : {
+      "unlimited" : true
+    },
+    "times" : {
+      "unlimited" : true
+    }
+  }
+
+ with id:
+
+  updateUserSucceed
+ 
