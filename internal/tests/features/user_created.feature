@@ -1,35 +1,7 @@
 Feature: process user.created event
 
   Background: the barong-users-manager is up and running
-    Given a barong login endpoint:
-    """json
-    {
-      "id": "barongLoginSucceed",
-      "httpRequest": {
-        "method": "POST",
-        "path": "/api/v1/auth/identity/sessions"
-      },
-      "httpResponse": {
-        "statusCode": 200,
-        "headers": {
-          "content-type": ["application/json"],
-          "Set-Cookie": ["_barong_session=test_session; Path=/; HttpOnly"]
-        },
-        "body": {
-          "uid": "IDADMIN000001",
-          "email": "admin@barong.io",
-          "role": "admin",
-          "level": 4,
-          "otp": false,
-          "state": "active"
-        }
-      },
-      "priority": 0,
-      "timeToLive": {"unlimited": true},
-      "times": {"unlimited": true}
-    }
-    """
-    And a running barong-users-manager
+    Given a running barong-users-manager
 
   Scenario: a user.created event adds an email verified label to the user
     Given a user.created event:
@@ -51,7 +23,7 @@ Feature: process user.created event
       "id": "addLabelSucceed",
       "httpRequest": {
         "method": "POST",
-        "path": "/api/v1/auth/admin/users/labels"
+        "path": "/api/v2/management/labels"
       },
       "httpResponse": {
         "statusCode": 200,

@@ -18,8 +18,8 @@ func main() {
 	rabbitmqUser := getEnvOrDefault("RABBITMQ_USER", rabbitmq.DefaultUser)
 	rabbitmqPassword := getEnvOrDefault("RABBITMQ_PASSWORD", rabbitmq.DefaultPassword)
 	barongURL := mustGetEnv("BARONG_URL")
-	barongAdminEmail := mustGetEnv("BARONG_ADMIN_EMAIL")
-	barongAdminPassword := mustGetEnv("BARONG_ADMIN_PASSWORD")
+	barongMgmtKeyID := mustGetEnv("BARONG_MGMT_KEY_ID")
+	barongMgmtPrivateKeyFile := mustGetEnv("BARONG_MGMT_PRIVATE_KEY_FILE")
 
 	a, err := app.NewApp(
 		app.WithRabbitmqHost(rabbitmqHost),
@@ -27,8 +27,8 @@ func main() {
 		app.WithRabbitmqUser(rabbitmqUser),
 		app.WithRabbitmqPassword(rabbitmqPassword),
 		app.WithBarongURL(barongURL),
-		app.WithBarongAdminEmail(barongAdminEmail),
-		app.WithBarongAdminPassword(barongAdminPassword),
+		app.WithBarongMgmtKeyID(barongMgmtKeyID),
+		app.WithBarongMgmtPrivateKeyFile(barongMgmtPrivateKeyFile),
 	)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error initializing app: %v\n", err)

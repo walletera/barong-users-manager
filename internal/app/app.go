@@ -2,13 +2,15 @@ package app
 
 import (
 	"context"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"log/slog"
-	"net/http"
+	"os"
 	"time"
 
-	"github.com/walletera/barong-cli/pkg/admin"
-	baronguser "github.com/walletera/barong-cli/pkg/user"
+	"github.com/walletera/barong-cli/pkg/management"
 	barongevents "github.com/walletera/barong-users-manager/internal/domain/events/barong"
 	"github.com/walletera/eventskit/messages"
 	"github.com/walletera/eventskit/rabbitmq"
@@ -23,22 +25,18 @@ const (
 	RabbitMQExchangeType = "direct"
 	RabbitMQRoutingKey   = "user.created"
 	RabbitMQQueueName    = "barong-users-manager"
-
-	sessionRefreshLeadTime  = time.Minute
-	sessionRefreshRetryWait = 30 * time.Second
-	sessionRefreshFallback  = time.Hour
 )
 
 type App struct {
-	rabbitmqHost        string
-	rabbitmqPort        int
-	rabbitmqUser        string
-	rabbitmqPassword    string
-	barongURL           string
-	barongAdminEmail    string
-	barongAdminPassword string
-	logHandler          slog.Handler
-	logger              *slog.Logger
+	rabbitmqHost            string
+	rabbitmqPort            int
+	rabbitmqUser            string
+	rabbitmqPassword        string
+	barongURL               string
+	barongMgmtKeyID         string
+	barongMgmtPrivateKeyFile string
+	logHandler              slog.Handler
+	logger                  *slog.Logger
 }
 
 func NewApp(opts ...Option) (*App, error) {
@@ -55,16 +53,14 @@ func NewApp(opts ...Option) (*App, error) {
 func (a *App) Run(ctx context.Context) error {
 	a.logger = slog.New(a.logHandler).With("service", "barong-users-manager")
 
-	cookies, err := a.login()
+	privateKey, err := loadRSAPrivateKey(a.barongMgmtPrivateKeyFile)
 	if err != nil {
-		return fmt.Errorf("failed logging in to barong: %w", err)
+		return fmt.Errorf("failed loading management private key: %w", err)
 	}
 
-	adminClient := admin.NewAuthenticatedClient(a.barongURL, cookies)
-	handler := barongevents.NewEventsHandler(adminClient, a.logger)
+	mgmtClient := management.NewClient(a.barongURL, a.barongMgmtKeyID, privateKey)
+	handler := barongevents.NewEventsHandler(mgmtClient, a.logger)
 	deserializer := barongevents.NewDeserializer()
-
-	go a.refreshSession(ctx, cookies, handler)
 
 	rabbitmqClient, err := rabbitmq.NewClient(
 		rabbitmq.WithHost(a.rabbitmqHost),
@@ -101,67 +97,31 @@ func (a *App) Stop(_ context.Context) {
 	a.logger.Info("barong-users-manager stopped")
 }
 
-func (a *App) login() ([]*http.Cookie, error) {
-	_, cookies, err := baronguser.NewClient(a.barongURL).Login(a.barongAdminEmail, a.barongAdminPassword, "")
-	return cookies, err
-}
-
-func (a *App) refreshSession(ctx context.Context, cookies []*http.Cookie, handler *barongevents.EventsHandler) {
-	for {
-		delay := sessionRefreshDelay(cookies)
-		select {
-		case <-ctx.Done():
-			return
-		case <-time.After(delay):
-		}
-
-		newCookies, err := a.login()
+func loadRSAPrivateKey(path string) (*rsa.PrivateKey, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("reading file: %w", err)
+	}
+	block, _ := pem.Decode(data)
+	if block == nil {
+		return nil, fmt.Errorf("no PEM block found")
+	}
+	switch block.Type {
+	case "RSA PRIVATE KEY":
+		return x509.ParsePKCS1PrivateKey(block.Bytes)
+	case "PRIVATE KEY":
+		key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 		if err != nil {
-			a.logger.Error("failed re-logging in to barong, retrying", "error", err, "retryIn", sessionRefreshRetryWait)
-			select {
-			case <-ctx.Done():
-				return
-			case <-time.After(sessionRefreshRetryWait):
-			}
-			continue
+			return nil, err
 		}
-
-		handler.UpdateAdminClient(admin.NewAuthenticatedClient(a.barongURL, newCookies))
-		a.logger.Info("barong session refreshed")
-		cookies = newCookies
-	}
-}
-
-func sessionRefreshDelay(cookies []*http.Cookie) time.Duration {
-	expiry := earliestCookieExpiry(cookies)
-	if expiry.IsZero() {
-		return sessionRefreshFallback
-	}
-	delay := time.Until(expiry) - sessionRefreshLeadTime
-	if delay <= 0 {
-		return 0
-	}
-	return delay
-}
-
-func earliestCookieExpiry(cookies []*http.Cookie) time.Time {
-	var earliest time.Time
-	for _, c := range cookies {
-		var exp time.Time
-		switch {
-		case c.MaxAge > 0:
-			exp = time.Now().Add(time.Duration(c.MaxAge) * time.Second)
-		case !c.Expires.IsZero():
-			exp = c.Expires
+		rsaKey, ok := key.(*rsa.PrivateKey)
+		if !ok {
+			return nil, fmt.Errorf("PKCS8 key is not RSA")
 		}
-		if exp.IsZero() {
-			continue
-		}
-		if earliest.IsZero() || exp.Before(earliest) {
-			earliest = exp
-		}
+		return rsaKey, nil
+	default:
+		return nil, fmt.Errorf("unsupported PEM block type: %s", block.Type)
 	}
-	return earliest
 }
 
 func setDefaultOpts(a *App) error {

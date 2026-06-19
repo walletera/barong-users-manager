@@ -3,6 +3,7 @@ module github.com/walletera/barong-users-manager
 go 1.24.0
 
 require (
+	github.com/avast/retry-go/v4 v4.7.0
 	github.com/cucumber/godog v0.14.0
 	github.com/testcontainers/testcontainers-go v0.30.0
 	github.com/walletera/barong-cli v0.0.1
@@ -75,4 +76,7 @@ require (
 	google.golang.org/protobuf v1.36.6 // indirect
 )
 
-replace github.com/walletera/eventskit => /home/fedev/Code/walletera/eventskit
+replace (
+	github.com/walletera/barong-cli => /home/fedev/Code/walletera/barong-cli
+	github.com/walletera/eventskit => /home/fedev/Code/walletera/eventskit
+)

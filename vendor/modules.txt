@@ -15,6 +15,9 @@ github.com/Microsoft/go-winio/pkg/guid
 # github.com/Microsoft/hcsshim v0.11.4
 ## explicit; go 1.18
 github.com/Microsoft/hcsshim/osversion
+# github.com/avast/retry-go/v4 v4.7.0
+## explicit; go 1.20
+github.com/avast/retry-go/v4
 # github.com/cenkalti/backoff/v4 v4.2.1
 ## explicit; go 1.18
 github.com/cenkalti/backoff/v4
@@ -203,10 +206,9 @@ github.com/tklauser/go-sysconf
 # github.com/tklauser/numcpus v0.6.1
 ## explicit; go 1.13
 github.com/tklauser/numcpus
-# github.com/walletera/barong-cli v0.0.1
+# github.com/walletera/barong-cli v0.0.1 => /home/fedev/Code/walletera/barong-cli
 ## explicit; go 1.21
-github.com/walletera/barong-cli/pkg/admin
-github.com/walletera/barong-cli/pkg/user
+github.com/walletera/barong-cli/pkg/management
 # github.com/walletera/eventskit v0.0.11 => /home/fedev/Code/walletera/eventskit
 ## explicit; go 1.23.0
 github.com/walletera/eventskit/events
@@ -351,4 +353,5 @@ google.golang.org/protobuf/reflect/protoregistry
 google.golang.org/protobuf/runtime/protoiface
 google.golang.org/protobuf/runtime/protoimpl
 google.golang.org/protobuf/types/known/anypb
+# github.com/walletera/barong-cli => /home/fedev/Code/walletera/barong-cli
 # github.com/walletera/eventskit => /home/fedev/Code/walletera/eventskit

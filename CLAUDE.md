@@ -29,11 +29,11 @@ This is a **Barong user management microservice**. It consumes JWS events from R
 ### Layers
 
 - **`cmd/main.go`** — Entry point; reads env vars, wires `app.NewApp`, handles SIGINT/SIGTERM
-- **`internal/app/`** — Bootstrap: logs in to Barong at startup, creates admin client, wires RabbitMQ consumer and message processor
+- **`internal/app/`** — Bootstrap: loads RSA private key from file, creates management client, wires RabbitMQ consumer and message processor
 - **`internal/domain/events/barong/`** — Event types, deserializer, and handler
   - `user_created_event.go` — `UserCreated` struct + `Handler` interface
   - `deserializer.go` — Unwraps JWS envelope, decodes payload, returns `UserCreated` or nil
-  - `events_handler.go` — Calls `admin.Client.UpdateUser`; treats `admin.user.state_no_change` (422) as idempotent success
+  - `events_handler.go` — Calls `admin.Client.AddLabel`; treats `key.taken` (422) as idempotent success
 - **`internal/tests/`** — BDD integration tests (godog + MockServer)
 
 ### External Dependencies
@@ -41,16 +41,15 @@ This is a **Barong user management microservice**. It consumes JWS events from R
 | Dependency | Purpose |
 |---|---|
 | RabbitMQ | Consumes events from exchange `barong.events.model`, routing key `user.created`, queue `barong-users-manager` |
-| Barong Admin API | `PUT /api/v1/auth/admin/users` — sets user `state=active` |
-| Barong User API | `POST /api/v1/auth/identity/sessions` — login at startup to obtain session cookies |
+| Barong Management API | `POST /api/v2/management/labels` — adds `email/verified` label to user |
 
 ### Required Environment Variables
 
 ```
 RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_USER, RABBITMQ_PASSWORD
-BARONG_URL            # Base URL of the Barong instance (e.g. http://barong:9090)
-BARONG_ADMIN_EMAIL    # Email of the Barong admin account
-BARONG_ADMIN_PASSWORD # Password of the Barong admin account
+BARONG_URL                    # Base URL of the Barong instance (e.g. http://barong:9090)
+BARONG_MGMT_KEY_ID            # Key ID (kid) for Management API JWT signing
+BARONG_MGMT_PRIVATE_KEY_FILE  # Path to PEM-encoded RSA private key (PKCS#1 or PKCS#8)
 ```
 
 ## Testing
@@ -61,8 +60,4 @@ Tests are BDD-style using [godog](https://github.com/cucumber/godog) with Gherki
 - Test state is passed via `context.WithValue`; log watching via `slogwatcher` asserts service behavior
 - MockServer mocks both the Barong login endpoint and the update-user endpoint
 
-**Login mock ordering** — The Barong login mock must be registered in the Gherkin `Background` *before* the "a running barong-users-manager" step, because `App.Run()` calls the login during startup.
-
-**Idempotency** — Barong returns `422 {"errors":["admin.user.state_no_change"]}` when `state=active` is set on an already-active user. The handler detects this via `strings.Contains` and treats it as a non-retryable success (acks the message normally).
-
-**Session expiry** — The service logs in once at startup and reuses session cookies for its lifetime. Re-login on 401 is a known follow-up task.
+**Idempotency** — Barong returns `422 {"errors":["admin.user.label_key.taken"]}` when the `email/verified` label already exists. The handler detects this via `strings.Contains` and treats it as a non-retryable success (acks the message normally).

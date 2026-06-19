@@ -71,10 +71,6 @@ func afterScenarioHook(ctx context.Context, _ *godog.Scenario, _ error) (context
     return ctx, nil
 }
 
-func aBarongLoginEndpoint(ctx context.Context, expectation *godog.DocString) (context.Context, error) {
-    return createMockServerExpectation(ctx, expectation, "barongLoginExpectationId")
-}
-
 func aRunningBarongUsersManager(ctx context.Context) (context.Context, error) {
     watcher := logsWatcherFromCtx(ctx)
 
@@ -86,8 +82,8 @@ func aRunningBarongUsersManager(ctx context.Context) (context.Context, error) {
         app.WithRabbitmqUser(rabbitmq.DefaultUser),
         app.WithRabbitmqPassword(rabbitmq.DefaultPassword),
         app.WithBarongURL(mockedBarongURL),
-        app.WithBarongAdminEmail("admin@barong.io"),
-        app.WithBarongAdminPassword("barong_admin_password"),
+        app.WithBarongMgmtKeyID("test-kid"),
+        app.WithBarongMgmtPrivateKeyFile(testPrivateKeyFile),
         app.WithLogHandler(watcher.DecoratedHandler()),
     )
     if err != nil {

@@ -2,6 +2,10 @@ package tests
 
 import (
     "context"
+    "crypto/rand"
+    "crypto/rsa"
+    "crypto/x509"
+    "encoding/pem"
     "fmt"
     "net/http"
     "os"
@@ -19,9 +23,18 @@ const (
     containersTerminationTimeout = 30 * time.Second
 )
 
+var testPrivateKeyFile string
+
 func TestMain(m *testing.M) {
     ctx, cancel := context.WithTimeout(context.Background(), containersStartTimeout)
     defer cancel()
+
+    keyFile, err := generateTestPrivateKeyFile()
+    if err != nil {
+        panic("error generating test private key: " + err.Error())
+    }
+    testPrivateKeyFile = keyFile
+    defer os.Remove(keyFile)
 
     terminateRabbitMQContainer, err := startRabbitMQContainer(ctx)
     if err != nil {
@@ -44,6 +57,25 @@ func TestMain(m *testing.M) {
     }
 
     os.Exit(status)
+}
+
+func generateTestPrivateKeyFile() (string, error) {
+    key, err := rsa.GenerateKey(rand.Reader, 2048)
+    if err != nil {
+        return "", err
+    }
+    f, err := os.CreateTemp("", "bum-test-key-*.pem")
+    if err != nil {
+        return "", err
+    }
+    defer f.Close()
+    if err := pem.Encode(f, &pem.Block{
+        Type:  "RSA PRIVATE KEY",
+        Bytes: x509.MarshalPKCS1PrivateKey(key),
+    }); err != nil {
+        return "", err
+    }
+    return f.Name(), nil
 }
 
 func startRabbitMQContainer(ctx context.Context) (func() error, error) {

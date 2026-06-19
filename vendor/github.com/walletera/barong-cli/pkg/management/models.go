@@ -1,9 +1,8 @@
-package admin
-
-import "encoding/json"
+package management
 
 type User struct {
 	Email       string `json:"email"`
+	Username    string `json:"username"`
 	UID         string `json:"uid"`
 	Role        string `json:"role"`
 	Level       int    `json:"level"`
@@ -25,6 +24,21 @@ type Profile struct {
 	Metadata  interface{} `json:"metadata"`
 	CreatedAt string      `json:"created_at"`
 	UpdatedAt string      `json:"updated_at"`
+}
+
+type UserWithProfile struct {
+	Email       string    `json:"email"`
+	Username    string    `json:"username"`
+	UID         string    `json:"uid"`
+	Role        string    `json:"role"`
+	Level       int       `json:"level"`
+	OTP         bool      `json:"otp"`
+	State       string    `json:"state"`
+	ReferralUID string    `json:"referral_uid"`
+	Data        string    `json:"data"`
+	Profiles    []Profile `json:"profiles"`
+	CreatedAt   string    `json:"created_at"`
+	UpdatedAt   string    `json:"updated_at"`
 }
 
 type Document struct {
@@ -53,6 +67,14 @@ type Comment struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
+type Label struct {
+	Key       string `json:"key"`
+	Value     string `json:"value"`
+	Scope     string `json:"scope"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
 type AdminLabelView struct {
 	Key         string `json:"key"`
 	Value       string `json:"value"`
@@ -70,12 +92,12 @@ type Phone struct {
 
 type UserWithKYC struct {
 	Email        string           `json:"email"`
+	Username     string           `json:"username"`
 	UID          string           `json:"uid"`
 	Role         string           `json:"role"`
 	Level        int              `json:"level"`
 	OTP          bool             `json:"otp"`
 	State        string           `json:"state"`
-	ReferralUID  string           `json:"referral_uid"`
 	Data         string           `json:"data"`
 	Profiles     []Profile        `json:"profiles"`
 	Labels       []AdminLabelView `json:"labels"`
@@ -87,66 +109,13 @@ type UserWithKYC struct {
 	UpdatedAt    string           `json:"updated_at"`
 }
 
-type APIKey struct {
-	Kid       string `json:"kid"`
-	Algorithm string `json:"algorithm"`
-	Scope     string `json:"scope"`
-	State     string `json:"state"`
-	Secret    string `json:"secret"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
-}
-
-type Permission struct {
-	ID        int    `json:"id"`
-	Action    string `json:"action"`
+type ServiceAccount struct {
+	Email     string `json:"email"`
+	UID       string `json:"uid"`
 	Role      string `json:"role"`
-	Verb      string `json:"verb"`
-	Path      string `json:"path"`
-	Topic     string `json:"topic"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
-}
-
-type Activity struct {
-	UserIP    string `json:"user_ip"`
-	UserAgent string `json:"user_agent"`
-	Topic     string `json:"topic"`
-	Action    string `json:"action"`
-	Result    string `json:"result"`
-	Data      string `json:"data"`
+	Level     int    `json:"level"`
+	State     string `json:"state"`
 	User      *User  `json:"user"`
 	CreatedAt string `json:"created_at"`
-}
-
-type AdminActivity struct {
-	UserIP    string `json:"user_ip"`
-	UserAgent string `json:"user_agent"`
-	Topic     string `json:"topic"`
-	Action    string `json:"action"`
-	Result    string `json:"result"`
-	Data      string `json:"data"`
-	Admin     *User  `json:"admin"`
-	Target    *User  `json:"target"`
-	CreatedAt string `json:"created_at"`
-}
-
-type Restriction struct {
-	ID        int    `json:"id"`
-	Category  string `json:"category"`
-	Scope     string `json:"scope"`
-	Value     string `json:"value"`
-	Code      int    `json:"code"`
-	State     string `json:"state"`
-	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
-
-type Level struct {
-	ID    int    `json:"id"`
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-// RawJSON is used for endpoints that return an unstructured JSON response.
-type RawJSON = json.RawMessage

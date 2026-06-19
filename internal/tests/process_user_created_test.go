@@ -32,7 +32,6 @@ func TestUserCreatedEventProcessing(t *testing.T) {
 
 func InitializeUserCreatedScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(beforeScenarioHook)
-	ctx.Given(`^a barong login endpoint:$`, aBarongLoginEndpoint)
 	ctx.Given(`^a running barong-users-manager$`, aRunningBarongUsersManager)
 	ctx.Given(`^a user\.created event:$`, aUserCreatedEvent)
 	ctx.Given(`^a barong endpoint to add a label to a user:$`, aBarongEndpointToAddLabelToUser)

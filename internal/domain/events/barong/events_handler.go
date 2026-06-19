@@ -4,31 +4,42 @@ import (
     "context"
     "log/slog"
     "strings"
-    "sync/atomic"
+    "time"
 
-    "github.com/walletera/barong-cli/pkg/admin"
+    retry "github.com/avast/retry-go/v4"
+    "github.com/walletera/barong-cli/pkg/management"
     "github.com/walletera/werrors"
 )
 
-const labelKeyTakenError = "key.taken"
+const (
+    labelKeyTakenError = "key.taken"
+    retryAttempts      = 6 // 1 initial + 5 retries
+    retryDelay         = 200 * time.Millisecond
+)
 
 type EventsHandler struct {
-    adminClient atomic.Pointer[admin.Client]
-    logger      *slog.Logger
+    mgmtClient *management.Client
+    logger     *slog.Logger
 }
 
-func NewEventsHandler(adminClient *admin.Client, logger *slog.Logger) *EventsHandler {
-    h := &EventsHandler{logger: logger}
-    h.adminClient.Store(adminClient)
-    return h
+func NewEventsHandler(mgmtClient *management.Client, logger *slog.Logger) *EventsHandler {
+    return &EventsHandler{mgmtClient: mgmtClient, logger: logger}
 }
 
-func (h *EventsHandler) UpdateAdminClient(client *admin.Client) {
-    h.adminClient.Store(client)
-}
-
-func (h *EventsHandler) HandleUserCreated(_ context.Context, event UserCreated) werrors.WError {
-    err := h.adminClient.Load().AddLabel(event.UID, "email", "verified", "", "private")
+func (h *EventsHandler) HandleUserCreated(ctx context.Context, event UserCreated) werrors.WError {
+    err := retry.Do(
+        func() error {
+            _, err := h.mgmtClient.CreateLabel(event.UID, "email", "verified", "")
+            return err
+        },
+        retry.Attempts(retryAttempts),
+        retry.Delay(retryDelay),
+        retry.DelayType(retry.BackOffDelay),
+        retry.Context(ctx),
+        retry.RetryIf(func(err error) bool {
+            return !strings.Contains(err.Error(), labelKeyTakenError)
+        }),
+    )
     if err != nil {
         if strings.Contains(err.Error(), labelKeyTakenError) {
             h.logger.Info("label already exists for user", "uid", event.UID)

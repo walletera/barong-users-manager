@@ -24,12 +24,12 @@ func WithBarongURL(url string) Option {
 	return func(a *App) { a.barongURL = url }
 }
 
-func WithBarongAdminEmail(email string) Option {
-	return func(a *App) { a.barongAdminEmail = email }
+func WithBarongMgmtKeyID(keyID string) Option {
+	return func(a *App) { a.barongMgmtKeyID = keyID }
 }
 
-func WithBarongAdminPassword(password string) Option {
-	return func(a *App) { a.barongAdminPassword = password }
+func WithBarongMgmtPrivateKeyFile(path string) Option {
+	return func(a *App) { a.barongMgmtPrivateKeyFile = path }
 }
 
 func WithLogHandler(handler slog.Handler) Option {
